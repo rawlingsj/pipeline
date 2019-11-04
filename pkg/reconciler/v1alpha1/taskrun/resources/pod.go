@@ -48,8 +48,9 @@ import (
 )
 
 const (
-	workspaceDir = "/workspace"
-	homeDir      = "/builder/home"
+	workspaceDir        = "/workspace"
+	homeDir             = "/builder/home"
+	annotationGitHubApp = "tekton.dev/githubapp-owner"
 )
 
 // These are effectively const, but Go doesn't have such an annotation.
@@ -107,7 +108,7 @@ var (
 		"The container image for preparing our Build's credentials.")
 )
 
-func makeCredentialInitializer(serviceAccountName, namespace string, kubeclient kubernetes.Interface) (*corev1.Container, []corev1.Volume, error) {
+func makeCredentialInitializer(serviceAccountName, namespace, owner string, kubeclient kubernetes.Interface) (*corev1.Container, []corev1.Volume, error) {
 	if serviceAccountName == "" {
 		serviceAccountName = "default"
 	}
@@ -128,7 +129,10 @@ func makeCredentialInitializer(serviceAccountName, namespace string, kubeclient 
 		if err != nil {
 			return nil, nil, err
 		}
-
+		// if there's a github app annotation on the secret lets match that to the github org this build is for
+		if owner != "" && secret.Annotations[annotationGitHubApp] != "" && secret.Annotations[annotationGitHubApp] != owner {
+			continue
+		}
 		matched := false
 		for _, b := range builders {
 			if sa := b.MatchingAnnotations(secret); len(sa) > 0 {
@@ -251,7 +255,7 @@ func TryGetPod(taskRunStatus v1alpha1.TaskRunStatus, gp GetPod) (*corev1.Pod, er
 // MakePod converts TaskRun and TaskSpec objects to a Pod which implements the taskrun specified
 // by the supplied CRD.
 func MakePod(taskRun *v1alpha1.TaskRun, taskSpec v1alpha1.TaskSpec, kubeclient kubernetes.Interface, cache *entrypoint.Cache, logger *zap.SugaredLogger) (*corev1.Pod, error) {
-	cred, secrets, err := makeCredentialInitializer(taskRun.Spec.ServiceAccount, taskRun.Namespace, kubeclient)
+	cred, secrets, err := makeCredentialInitializer(taskRun.Spec.ServiceAccount, taskRun.Namespace, taskRun.Labels["owner"], kubeclient)
 	if err != nil {
 		return nil, err
 	}
