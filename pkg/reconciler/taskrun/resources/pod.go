@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -114,7 +115,7 @@ const (
 	readyAnnotationValue = "READY"
 )
 
-func makeCredentialInitializer(credsImage, serviceAccountName, namespace string, kubeclient kubernetes.Interface) (*v1alpha1.Step, []corev1.Volume, error) {
+func makeCredentialInitializer(credsImage, serviceAccountName, namespace, owner string, kubeclient kubernetes.Interface) (*v1alpha1.Step, []corev1.Volume, error) {
 	if serviceAccountName == "" {
 		serviceAccountName = "default"
 	}
@@ -135,7 +136,10 @@ func makeCredentialInitializer(credsImage, serviceAccountName, namespace string,
 		if err != nil {
 			return nil, nil, err
 		}
-
+		// if secret annotation != "" and it matched owner then...
+		if secret.Annotations["tekton.dev/githubapp-owner"] != "" && secret.Annotations["tekton.dev/githubapp-owner"] != owner {
+			continue
+		}
 		matched := false
 		for _, b := range builders {
 			if sa := b.MatchingAnnotations(secret); len(sa) > 0 {
@@ -237,7 +241,8 @@ func TryGetPod(taskRunStatus v1alpha1.TaskRunStatus, gp GetPod) (*corev1.Pod, er
 // MakePod converts TaskRun and TaskSpec objects to a Pod which implements the taskrun specified
 // by the supplied CRD.
 func MakePod(images pipeline.Images, taskRun *v1alpha1.TaskRun, taskSpec v1alpha1.TaskSpec, kubeclient kubernetes.Interface) (*corev1.Pod, error) {
-	cred, secrets, err := makeCredentialInitializer(images.CredsImage, taskRun.GetServiceAccountName(), taskRun.Namespace, kubeclient)
+log.Printf("ZZZZZZZZZZ %s", taskRun.Labels["owner"])
+	cred, secrets, err := makeCredentialInitializer(images.CredsImage, taskRun.GetServiceAccountName(), taskRun.Namespace, taskRun.Labels["owner"], kubeclient)
 	if err != nil {
 		return nil, err
 	}
