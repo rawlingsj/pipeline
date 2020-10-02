@@ -125,13 +125,13 @@ var _ reconciler.LeaderAware = (*reconcilerImpl)(nil)
 func NewReconciler(ctx context.Context, logger *zap.SugaredLogger, client versioned.Interface, lister pipelinev1alpha1.RunLister, recorder record.EventRecorder, r Interface, options ...controller.Options) controller.Reconciler {
 	// Check the options function input. It should be 0 or 1.
 	if len(options) > 1 {
-		logger.Fatalf("up to one options struct is supported, found %d", len(options))
+		logger.Fatal("Up to one options struct is supported, found: ", len(options))
 	}
 
 	// Fail fast when users inadvertently implement the other LeaderAware interface.
 	// For the typed reconcilers, Promote shouldn't take any arguments.
 	if _, ok := r.(reconciler.LeaderAware); ok {
-		logger.Fatalf("%T implements the incorrect LeaderAware interface.  Promote() should not take an argument as genreconciler handles the enqueuing automatically.", r)
+		logger.Fatalf("%T implements the incorrect LeaderAware interface. Promote() should not take an argument as genreconciler handles the enqueuing automatically.", r)
 	}
 	// TODO: Consider validating when folks implement ReadOnlyFinalizer, but not Finalizer.
 
@@ -184,7 +184,7 @@ func (r *reconcilerImpl) Reconcile(ctx context.Context, key string) error {
 	// by the reconciler. Returns an error is the resource key is invalid.
 	s, err := newState(key, r)
 	if err != nil {
-		logger.Errorf("invalid resource key: %s", key)
+		logger.Error("Invalid resource key: ", key)
 		return nil
 	}
 
@@ -210,7 +210,7 @@ func (r *reconcilerImpl) Reconcile(ctx context.Context, key string) error {
 
 	if errors.IsNotFound(err) {
 		// The resource may no longer exist, in which case we stop processing.
-		logger.Debugf("resource %q no longer exists", key)
+		logger.Debugf("Resource %q no longer exists", key)
 		return nil
 	} else if err != nil {
 		return err
@@ -235,13 +235,17 @@ func (r *reconcilerImpl) Reconcile(ctx context.Context, key string) error {
 			return fmt.Errorf("failed to set finalizers: %w", err)
 		}
 
-		reconciler.PreProcessReconcile(ctx, resource)
+		if !r.skipStatusUpdates {
+			reconciler.PreProcessReconcile(ctx, resource)
+		}
 
 		// Reconcile this copy of the resource and then write back any status
 		// updates regardless of whether the reconciliation errored out.
 		reconcileEvent = do(ctx, resource)
 
-		reconciler.PostProcessReconcile(ctx, resource, original)
+		if !r.skipStatusUpdates {
+			reconciler.PostProcessReconcile(ctx, resource, original)
+		}
 
 	case reconciler.DoFinalizeKind:
 		// For finalizing reconcilers, if this resource being marked for deletion
@@ -311,7 +315,7 @@ func (r *reconcilerImpl) updateStatus(ctx context.Context, existing *v1alpha1.Ru
 
 			getter := r.Client.TektonV1alpha1().Runs(desired.Namespace)
 
-			existing, err = getter.Get(desired.Name, metav1.GetOptions{})
+			existing, err = getter.Get(ctx, desired.Name, metav1.GetOptions{})
 			if err != nil {
 				return err
 			}
@@ -323,14 +327,14 @@ func (r *reconcilerImpl) updateStatus(ctx context.Context, existing *v1alpha1.Ru
 		}
 
 		if diff, err := kmp.SafeDiff(existing.Status, desired.Status); err == nil && diff != "" {
-			logging.FromContext(ctx).Debugf("Updating status with: %s", diff)
+			logging.FromContext(ctx).Debug("Updating status with: ", diff)
 		}
 
 		existing.Status = desired.Status
 
 		updater := r.Client.TektonV1alpha1().Runs(existing.Namespace)
 
-		_, err = updater.UpdateStatus(existing)
+		_, err = updater.UpdateStatus(ctx, existing, metav1.UpdateOptions{})
 		return err
 	})
 }
@@ -388,7 +392,7 @@ func (r *reconcilerImpl) updateFinalizersFiltered(ctx context.Context, resource 
 	patcher := r.Client.TektonV1alpha1().Runs(resource.Namespace)
 
 	resourceName := resource.Name
-	resource, err = patcher.Patch(resourceName, types.MergePatchType, patch)
+	resource, err = patcher.Patch(ctx, resourceName, types.MergePatchType, patch, metav1.PatchOptions{})
 	if err != nil {
 		r.Recorder.Eventf(resource, v1.EventTypeWarning, "FinalizerUpdateFailed",
 			"Failed to update finalizers for %q: %v", resourceName, err)
