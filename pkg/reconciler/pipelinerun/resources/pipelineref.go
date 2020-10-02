@@ -17,6 +17,7 @@ limitations under the License.
 package resources
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
@@ -37,5 +38,5 @@ func (l *LocalPipelineRefResolver) GetPipeline(name string) (v1beta1.PipelineInt
 	if l.Namespace == "" {
 		return nil, fmt.Errorf("Must specify namespace to resolve reference to pipeline %s", name)
 	}
-	return l.Tektonclient.TektonV1beta1().Pipelines(l.Namespace).Get(name, metav1.GetOptions{})
+	return l.Tektonclient.TektonV1beta1().Pipelines(l.Namespace).Get(context.TODO(), name, metav1.GetOptions{})
 }

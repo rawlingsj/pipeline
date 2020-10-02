@@ -597,7 +597,7 @@ func (c *Reconciler) createTaskRun(ctx context.Context, rprt *resources.Resolved
 			Type:   apis.ConditionSucceeded,
 			Status: corev1.ConditionUnknown,
 		})
-		return c.PipelineClientSet.TektonV1beta1().TaskRuns(pr.Namespace).UpdateStatus(tr)
+		return c.PipelineClientSet.TektonV1beta1().TaskRuns(pr.Namespace).UpdateStatus(context.TODO(), tr, metav1.UpdateOptions{})
 	}
 
 	serviceAccountName, podTemplate := pr.GetTaskRunSpecs(rprt.PipelineTask.Name)
@@ -648,7 +648,7 @@ func (c *Reconciler) createTaskRun(ctx context.Context, rprt *resources.Resolved
 
 	resources.WrapSteps(&tr.Spec, rprt.PipelineTask, rprt.ResolvedTaskResources.Inputs, rprt.ResolvedTaskResources.Outputs, storageBasePath)
 	logger.Infof("Creating a new TaskRun object %s", rprt.TaskRunName)
-	return c.PipelineClientSet.TektonV1beta1().TaskRuns(pr.Namespace).Create(tr)
+	return c.PipelineClientSet.TektonV1beta1().TaskRuns(pr.Namespace).Create(context.TODO(), tr, metav1.CreateOptions{})
 }
 
 // taskWorkspaceByWorkspaceVolumeSource is returning the WorkspaceBinding with the TaskRun specified name.
@@ -821,7 +821,7 @@ func (c *Reconciler) updateLabelsAndAnnotations(pr *v1beta1.PipelineRun) (*v1bet
 		newPr = newPr.DeepCopy()
 		newPr.Labels = pr.Labels
 		newPr.Annotations = pr.Annotations
-		return c.PipelineClientSet.TektonV1beta1().PipelineRuns(pr.Namespace).Update(newPr)
+		return c.PipelineClientSet.TektonV1beta1().PipelineRuns(pr.Namespace).Update(context.TODO(), newPr, metav1.UpdateOptions{})
 	}
 	return newPr, nil
 }
@@ -866,7 +866,7 @@ func (c *Reconciler) makeConditionCheckContainer(ctx context.Context, rprt *reso
 			PodTemplate: podTemplate,
 		}}
 
-	cctr, err := c.PipelineClientSet.TektonV1beta1().TaskRuns(pr.Namespace).Create(tr)
+	cctr, err := c.PipelineClientSet.TektonV1beta1().TaskRuns(pr.Namespace).Create(context.TODO(), tr, metav1.CreateOptions{})
 	cc := v1beta1.ConditionCheck(*cctr)
 	return &cc, err
 }

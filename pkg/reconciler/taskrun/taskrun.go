@@ -460,7 +460,7 @@ func (c *Reconciler) updateLabelsAndAnnotations(tr *v1beta1.TaskRun) (*v1beta1.T
 		newTr = newTr.DeepCopy()
 		newTr.Labels = tr.Labels
 		newTr.Annotations = tr.Annotations
-		return c.PipelineClientSet.TektonV1beta1().TaskRuns(tr.Namespace).Update(newTr)
+		return c.PipelineClientSet.TektonV1beta1().TaskRuns(tr.Namespace).Update(context.TODO(), newTr, metav1.UpdateOptions{})
 	}
 	return newTr, nil
 }
