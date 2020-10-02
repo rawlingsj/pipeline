@@ -19,6 +19,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"context"
 	"time"
 
 	v1alpha1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
@@ -67,7 +68,7 @@ func (c *clusterTasks) Get(name string, options v1.GetOptions) (result *v1alpha1
 		Resource("clustertasks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -83,7 +84,7 @@ func (c *clusterTasks) List(opts v1.ListOptions) (result *v1alpha1.ClusterTaskLi
 		Resource("clustertasks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -99,7 +100,7 @@ func (c *clusterTasks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 		Resource("clustertasks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(context.TODO())
 }
 
 // Create takes the representation of a clusterTask and creates it.  Returns the server's representation of the clusterTask, and an error, if there is any.
@@ -108,7 +109,7 @@ func (c *clusterTasks) Create(clusterTask *v1alpha1.ClusterTask) (result *v1alph
 	err = c.client.Post().
 		Resource("clustertasks").
 		Body(clusterTask).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -120,7 +121,7 @@ func (c *clusterTasks) Update(clusterTask *v1alpha1.ClusterTask) (result *v1alph
 		Resource("clustertasks").
 		Name(clusterTask.Name).
 		Body(clusterTask).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -131,7 +132,7 @@ func (c *clusterTasks) Delete(name string, options *v1.DeleteOptions) error {
 		Resource("clustertasks").
 		Name(name).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -146,7 +147,7 @@ func (c *clusterTasks) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -158,7 +159,7 @@ func (c *clusterTasks) Patch(name string, pt types.PatchType, data []byte, subre
 		SubResource(subresources...).
 		Name(name).
 		Body(data).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }

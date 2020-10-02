@@ -507,7 +507,7 @@ func TestReconcile_ExplicitDefaultSA(t *testing.T) {
 				t.Fatalf("Reconcile didn't set pod name")
 			}
 
-			pod, err := clients.Kube.CoreV1().Pods(tr.Namespace).Get(tr.Status.PodName, metav1.GetOptions{})
+			pod, err := clients.Kube.CoreV1().Pods(tr.Namespace).Get(context.TODO(), tr.Status.PodName, metav1.GetOptions{})
 			if err != nil {
 				t.Fatalf("Failed to fetch build pod: %v", err)
 			}
@@ -661,12 +661,12 @@ func TestReconcile_FeatureFlags(t *testing.T) {
 			if saName == "" {
 				saName = "default"
 			}
-			if _, err := clients.Kube.CoreV1().ServiceAccounts(tc.taskRun.Namespace).Create(&corev1.ServiceAccount{
+			if _, err := clients.Kube.CoreV1().ServiceAccounts(tc.taskRun.Namespace).Create(context.TODO(), &corev1.ServiceAccount{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      saName,
 					Namespace: tc.taskRun.Namespace,
 				},
-			}); err != nil {
+			}, metav1.CreateOptions{}); err != nil {
 				t.Fatal(err)
 			}
 			if err := c.Reconciler.Reconcile(testAssets.Ctx, getRunName(tc.taskRun)); err != nil {
@@ -692,7 +692,7 @@ func TestReconcile_FeatureFlags(t *testing.T) {
 				t.Fatalf("Reconcile didn't set pod name")
 			}
 
-			pod, err := clients.Kube.CoreV1().Pods(tr.Namespace).Get(tr.Status.PodName, metav1.GetOptions{})
+			pod, err := clients.Kube.CoreV1().Pods(tr.Namespace).Get(context.TODO(), tr.Status.PodName, metav1.GetOptions{})
 			if err != nil {
 				t.Fatalf("Failed to fetch build pod: %v", err)
 			}
@@ -745,12 +745,12 @@ func TestReconcile_CloudEvents(t *testing.T) {
 	c := testAssets.Controller
 	clients := testAssets.Clients
 	saName := "default"
-	if _, err := clients.Kube.CoreV1().ServiceAccounts(taskRun.Namespace).Create(&corev1.ServiceAccount{
+	if _, err := clients.Kube.CoreV1().ServiceAccounts(taskRun.Namespace).Create(context.TODO(), &corev1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      saName,
 			Namespace: taskRun.Namespace,
 		},
-	}); err != nil {
+	}, metav1.CreateOptions{}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1450,12 +1450,12 @@ func TestReconcile(t *testing.T) {
 			if saName == "" {
 				saName = "default"
 			}
-			if _, err := clients.Kube.CoreV1().ServiceAccounts(tc.taskRun.Namespace).Create(&corev1.ServiceAccount{
+			if _, err := clients.Kube.CoreV1().ServiceAccounts(tc.taskRun.Namespace).Create(context.TODO(), &corev1.ServiceAccount{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      saName,
 					Namespace: tc.taskRun.Namespace,
 				},
-			}); err != nil {
+			}, metav1.CreateOptions{}); err != nil {
 				t.Fatal(err)
 			}
 
@@ -1482,7 +1482,7 @@ func TestReconcile(t *testing.T) {
 				t.Fatalf("Reconcile didn't set pod name")
 			}
 
-			pod, err := clients.Kube.CoreV1().Pods(tr.Namespace).Get(tr.Status.PodName, metav1.GetOptions{})
+			pod, err := clients.Kube.CoreV1().Pods(tr.Namespace).Get(context.TODO(), tr.Status.PodName, metav1.GetOptions{})
 			if err != nil {
 				t.Fatalf("Failed to fetch build pod: %v", err)
 			}
@@ -1520,12 +1520,12 @@ func TestReconcile_SetsStartTime(t *testing.T) {
 	clients := testAssets.Clients
 
 	t.Logf("Creating SA %s in %s", "default", "foo")
-	if _, err := clients.Kube.CoreV1().ServiceAccounts("foo").Create(&corev1.ServiceAccount{
+	if _, err := clients.Kube.CoreV1().ServiceAccounts("foo").Create(context.TODO(), &corev1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "default",
 			Namespace: "foo",
 		},
-	}); err != nil {
+	}, metav1.CreateOptions{}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1763,7 +1763,7 @@ func TestReconcilePodUpdateStatus(t *testing.T) {
 	pod.Status = corev1.PodStatus{
 		Phase: corev1.PodSucceeded,
 	}
-	if _, err := clients.Kube.CoreV1().Pods(taskRun.Namespace).UpdateStatus(pod); err != nil {
+	if _, err := clients.Kube.CoreV1().Pods(taskRun.Namespace).UpdateStatus(context.TODO(), pod, metav1.UpdateOptions{}); err != nil {
 		t.Errorf("Unexpected error while updating build: %v", err)
 	}
 
@@ -2222,12 +2222,12 @@ func TestReconcileCloudEvents(t *testing.T) {
 			if saName == "" {
 				saName = "default"
 			}
-			if _, err := clients.Kube.CoreV1().ServiceAccounts(tc.taskRun.Namespace).Create(&corev1.ServiceAccount{
+			if _, err := clients.Kube.CoreV1().ServiceAccounts(tc.taskRun.Namespace).Create(context.TODO(), &corev1.ServiceAccount{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      saName,
 					Namespace: tc.taskRun.Namespace,
 				},
-			}); err != nil {
+			}, metav1.CreateOptions{}); err != nil {
 				t.Fatal(err)
 			}
 
@@ -2440,12 +2440,12 @@ func TestReconcileValidDefaultWorkspace(t *testing.T) {
 	clients := testAssets.Clients
 
 	t.Logf("Creating SA %s in %s", "default", "foo")
-	if _, err := clients.Kube.CoreV1().ServiceAccounts("foo").Create(&corev1.ServiceAccount{
+	if _, err := clients.Kube.CoreV1().ServiceAccounts("foo").Create(context.TODO(), &corev1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "default",
 			Namespace: "foo",
 		},
-	}); err != nil {
+	}, metav1.CreateOptions{}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -2496,12 +2496,12 @@ func TestReconcileInvalidDefaultWorkspace(t *testing.T) {
 	clients := testAssets.Clients
 
 	t.Logf("Creating SA %s in %s", "default", "foo")
-	if _, err := clients.Kube.CoreV1().ServiceAccounts("foo").Create(&corev1.ServiceAccount{
+	if _, err := clients.Kube.CoreV1().ServiceAccounts("foo").Create(context.TODO(), &corev1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "default",
 			Namespace: "foo",
 		},
-	}); err != nil {
+	}, metav1.CreateOptions{}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -2563,12 +2563,12 @@ func TestReconcileValidDefaultWorkspaceOmittedOptionalWorkspace(t *testing.T) {
 	clients := testAssets.Clients
 
 	t.Logf("Creating SA %s in %s", "default", "foo")
-	if _, err := clients.Kube.CoreV1().ServiceAccounts("default").Create(&corev1.ServiceAccount{
+	if _, err := clients.Kube.CoreV1().ServiceAccounts("default").Create(context.TODO(), &corev1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "default",
 			Namespace: "default",
 		},
-	}); err != nil {
+	}, metav1.CreateOptions{}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -2581,7 +2581,7 @@ func TestReconcileValidDefaultWorkspaceOmittedOptionalWorkspace(t *testing.T) {
 		t.Fatalf("Error getting TaskRun %q: %v", taskRunOmittingWorkspace.Name, err)
 	}
 
-	pod, err := clients.Kube.CoreV1().Pods(taskRunOmittingWorkspace.Namespace).Get(tr.Status.PodName, metav1.GetOptions{})
+	pod, err := clients.Kube.CoreV1().Pods(taskRunOmittingWorkspace.Namespace).Get(context.TODO(), tr.Status.PodName, metav1.GetOptions{})
 	if err != nil {
 		t.Fatalf("Error getting Pod for TaskRun %q: %v", taskRunOmittingWorkspace.Name, err)
 	}
@@ -2729,12 +2729,12 @@ func TestReconcileWithWorkspacesIncompatibleWithAffinityAssistant(t *testing.T) 
 	clients := testAssets.Clients
 
 	t.Logf("Creating SA %s in %s", "default", "foo")
-	if _, err := clients.Kube.CoreV1().ServiceAccounts("foo").Create(&corev1.ServiceAccount{
+	if _, err := clients.Kube.CoreV1().ServiceAccounts("foo").Create(context.TODO(), &corev1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "default",
 			Namespace: "foo",
 		},
-	}); err != nil {
+	}, metav1.CreateOptions{}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -2792,12 +2792,12 @@ func TestReconcileWorkspaceWithVolumeClaimTemplate(t *testing.T) {
 	clients := testAssets.Clients
 
 	t.Logf("Creating SA %s in %s", "default", "foo")
-	if _, err := clients.Kube.CoreV1().ServiceAccounts("foo").Create(&corev1.ServiceAccount{
+	if _, err := clients.Kube.CoreV1().ServiceAccounts("foo").Create(context.TODO(), &corev1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "default",
 			Namespace: "foo",
 		},
-	}); err != nil {
+	}, metav1.CreateOptions{}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -2817,7 +2817,7 @@ func TestReconcileWorkspaceWithVolumeClaimTemplate(t *testing.T) {
 	}
 
 	expectedPVCName := fmt.Sprintf("%s-%s", claimName, "a521418087")
-	_, err = clients.Kube.CoreV1().PersistentVolumeClaims(taskRun.Namespace).Get(expectedPVCName, metav1.GetOptions{})
+	_, err = clients.Kube.CoreV1().PersistentVolumeClaims(taskRun.Namespace).Get(context.TODO(), expectedPVCName, metav1.GetOptions{})
 	if err != nil {
 		t.Fatalf("expected PVC %s to exist but instead got error when getting it: %v", expectedPVCName, err)
 	}

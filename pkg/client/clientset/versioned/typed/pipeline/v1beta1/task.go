@@ -19,6 +19,7 @@ limitations under the License.
 package v1beta1
 
 import (
+	"context"
 	"time"
 
 	v1beta1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
@@ -70,7 +71,7 @@ func (c *tasks) Get(name string, options v1.GetOptions) (result *v1beta1.Task, e
 		Resource("tasks").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -87,7 +88,7 @@ func (c *tasks) List(opts v1.ListOptions) (result *v1beta1.TaskList, err error) 
 		Resource("tasks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -104,7 +105,7 @@ func (c *tasks) Watch(opts v1.ListOptions) (watch.Interface, error) {
 		Resource("tasks").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(context.TODO())
 }
 
 // Create takes the representation of a task and creates it.  Returns the server's representation of the task, and an error, if there is any.
@@ -114,7 +115,7 @@ func (c *tasks) Create(task *v1beta1.Task) (result *v1beta1.Task, err error) {
 		Namespace(c.ns).
 		Resource("tasks").
 		Body(task).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -127,7 +128,7 @@ func (c *tasks) Update(task *v1beta1.Task) (result *v1beta1.Task, err error) {
 		Resource("tasks").
 		Name(task.Name).
 		Body(task).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -139,7 +140,7 @@ func (c *tasks) Delete(name string, options *v1.DeleteOptions) error {
 		Resource("tasks").
 		Name(name).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -155,7 +156,7 @@ func (c *tasks) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListO
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -168,7 +169,7 @@ func (c *tasks) Patch(name string, pt types.PatchType, data []byte, subresources
 		SubResource(subresources...).
 		Name(name).
 		Body(data).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }

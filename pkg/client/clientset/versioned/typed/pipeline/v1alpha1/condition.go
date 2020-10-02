@@ -19,6 +19,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"context"
 	"time"
 
 	v1alpha1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
@@ -70,7 +71,7 @@ func (c *conditions) Get(name string, options v1.GetOptions) (result *v1alpha1.C
 		Resource("conditions").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -87,7 +88,7 @@ func (c *conditions) List(opts v1.ListOptions) (result *v1alpha1.ConditionList, 
 		Resource("conditions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -104,7 +105,7 @@ func (c *conditions) Watch(opts v1.ListOptions) (watch.Interface, error) {
 		Resource("conditions").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(context.TODO())
 }
 
 // Create takes the representation of a condition and creates it.  Returns the server's representation of the condition, and an error, if there is any.
@@ -114,7 +115,7 @@ func (c *conditions) Create(condition *v1alpha1.Condition) (result *v1alpha1.Con
 		Namespace(c.ns).
 		Resource("conditions").
 		Body(condition).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -127,7 +128,7 @@ func (c *conditions) Update(condition *v1alpha1.Condition) (result *v1alpha1.Con
 		Resource("conditions").
 		Name(condition.Name).
 		Body(condition).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -139,7 +140,7 @@ func (c *conditions) Delete(name string, options *v1.DeleteOptions) error {
 		Resource("conditions").
 		Name(name).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -155,7 +156,7 @@ func (c *conditions) DeleteCollection(options *v1.DeleteOptions, listOptions v1.
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -168,7 +169,7 @@ func (c *conditions) Patch(name string, pt types.PatchType, data []byte, subreso
 		SubResource(subresources...).
 		Name(name).
 		Body(data).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }

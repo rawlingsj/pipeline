@@ -19,6 +19,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"context"
 	"time"
 
 	v1alpha1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
@@ -71,7 +72,7 @@ func (c *runs) Get(name string, options v1.GetOptions) (result *v1alpha1.Run, er
 		Resource("runs").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -88,7 +89,7 @@ func (c *runs) List(opts v1.ListOptions) (result *v1alpha1.RunList, err error) {
 		Resource("runs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -105,7 +106,7 @@ func (c *runs) Watch(opts v1.ListOptions) (watch.Interface, error) {
 		Resource("runs").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(context.TODO())
 }
 
 // Create takes the representation of a run and creates it.  Returns the server's representation of the run, and an error, if there is any.
@@ -115,7 +116,7 @@ func (c *runs) Create(run *v1alpha1.Run) (result *v1alpha1.Run, err error) {
 		Namespace(c.ns).
 		Resource("runs").
 		Body(run).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -128,7 +129,7 @@ func (c *runs) Update(run *v1alpha1.Run) (result *v1alpha1.Run, err error) {
 		Resource("runs").
 		Name(run.Name).
 		Body(run).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -144,7 +145,7 @@ func (c *runs) UpdateStatus(run *v1alpha1.Run) (result *v1alpha1.Run, err error)
 		Name(run.Name).
 		SubResource("status").
 		Body(run).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -156,7 +157,7 @@ func (c *runs) Delete(name string, options *v1.DeleteOptions) error {
 		Resource("runs").
 		Name(name).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -172,7 +173,7 @@ func (c *runs) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOp
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -185,7 +186,7 @@ func (c *runs) Patch(name string, pt types.PatchType, data []byte, subresources 
 		SubResource(subresources...).
 		Name(name).
 		Body(data).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }

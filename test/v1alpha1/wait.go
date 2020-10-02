@@ -93,7 +93,7 @@ func WaitForDeploymentState(c *clients, name string, namespace string, inState f
 	defer span.End()
 
 	return wait.PollImmediate(interval, timeout, func() (bool, error) {
-		d, err := c.KubeClient.Kube.AppsV1().Deployments(namespace).Get(name, metav1.GetOptions{})
+		d, err := c.KubeClient.Kube.AppsV1().Deployments(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 		if err != nil {
 			return true, err
 		}
@@ -111,7 +111,7 @@ func WaitForPodState(c *clients, name string, namespace string, inState func(r *
 	defer span.End()
 
 	return wait.PollImmediate(interval, timeout, func() (bool, error) {
-		r, err := c.KubeClient.Kube.CoreV1().Pods(namespace).Get(name, metav1.GetOptions{})
+		r, err := c.KubeClient.Kube.CoreV1().Pods(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 		if err != nil {
 			return true, err
 		}
@@ -147,7 +147,7 @@ func WaitForServiceExternalIPState(c *clients, namespace, name string, inState f
 	defer span.End()
 
 	return wait.PollImmediate(interval, timeout, func() (bool, error) {
-		r, err := c.KubeClient.Kube.CoreV1().Services(namespace).Get(name, metav1.GetOptions{})
+		r, err := c.KubeClient.Kube.CoreV1().Services(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 		if err != nil {
 			return true, err
 		}

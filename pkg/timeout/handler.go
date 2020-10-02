@@ -194,7 +194,7 @@ func (t *Handler) CheckTimeouts(ctx context.Context, namespace string, kubeclien
 	namespaceNames := []string{namespace}
 	// all namespaces
 	if namespace == "" {
-		namespaces, err := kubeclientset.CoreV1().Namespaces().List(metav1.ListOptions{})
+		namespaces, err := kubeclientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 		if err != nil {
 			t.logger.Errorf("Can't get namespaces list: %s", err)
 			return

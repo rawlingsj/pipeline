@@ -19,6 +19,7 @@ limitations under the License.
 package v1beta1
 
 import (
+	"context"
 	"time"
 
 	v1beta1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
@@ -71,7 +72,7 @@ func (c *taskRuns) Get(name string, options v1.GetOptions) (result *v1beta1.Task
 		Resource("taskruns").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -88,7 +89,7 @@ func (c *taskRuns) List(opts v1.ListOptions) (result *v1beta1.TaskRunList, err e
 		Resource("taskruns").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -105,7 +106,7 @@ func (c *taskRuns) Watch(opts v1.ListOptions) (watch.Interface, error) {
 		Resource("taskruns").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(context.TODO())
 }
 
 // Create takes the representation of a taskRun and creates it.  Returns the server's representation of the taskRun, and an error, if there is any.
@@ -115,7 +116,7 @@ func (c *taskRuns) Create(taskRun *v1beta1.TaskRun) (result *v1beta1.TaskRun, er
 		Namespace(c.ns).
 		Resource("taskruns").
 		Body(taskRun).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -128,7 +129,7 @@ func (c *taskRuns) Update(taskRun *v1beta1.TaskRun) (result *v1beta1.TaskRun, er
 		Resource("taskruns").
 		Name(taskRun.Name).
 		Body(taskRun).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -144,7 +145,7 @@ func (c *taskRuns) UpdateStatus(taskRun *v1beta1.TaskRun) (result *v1beta1.TaskR
 		Name(taskRun.Name).
 		SubResource("status").
 		Body(taskRun).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -156,7 +157,7 @@ func (c *taskRuns) Delete(name string, options *v1.DeleteOptions) error {
 		Resource("taskruns").
 		Name(name).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -172,7 +173,7 @@ func (c *taskRuns) DeleteCollection(options *v1.DeleteOptions, listOptions v1.Li
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -185,7 +186,7 @@ func (c *taskRuns) Patch(name string, pt types.PatchType, data []byte, subresour
 		SubResource(subresources...).
 		Name(name).
 		Body(data).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }

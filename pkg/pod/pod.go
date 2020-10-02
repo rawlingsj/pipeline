@@ -338,7 +338,7 @@ func nodeAffinityUsingAffinityAssistant(affinityAssistantName string) *corev1.Af
 // max LimitRange minimum must be found in the event of conflicting
 // container minimums specified.
 func getLimitRangeMinimum(namespace string, kubeclient kubernetes.Interface) (corev1.ResourceList, error) {
-	limitRanges, err := kubeclient.CoreV1().LimitRanges(namespace).List(metav1.ListOptions{})
+	limitRanges, err := kubeclient.CoreV1().LimitRanges(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}

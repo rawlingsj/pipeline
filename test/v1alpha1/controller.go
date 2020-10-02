@@ -18,6 +18,7 @@ package test
 
 import (
 	"context"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 
 	// Link in the fakes so they get injected into injection.Fake
@@ -163,12 +164,12 @@ func SeedTestData(t *testing.T, ctx context.Context, d Data) (Clients, Informers
 		if err := i.Pod.Informer().GetIndexer().Add(p); err != nil {
 			t.Fatal(err)
 		}
-		if _, err := c.Kube.CoreV1().Pods(p.Namespace).Create(p); err != nil {
+		if _, err := c.Kube.CoreV1().Pods(p.Namespace).Create(context.TODO(), p, metav1.CreateOptions{}); err != nil {
 			t.Fatal(err)
 		}
 	}
 	for _, n := range d.Namespaces {
-		if _, err := c.Kube.CoreV1().Namespaces().Create(n); err != nil {
+		if _, err := c.Kube.CoreV1().Namespaces().Create(context.TODO(), n, metav1.CreateOptions{}); err != nil {
 			t.Fatal(err)
 		}
 	}

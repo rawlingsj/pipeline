@@ -62,7 +62,7 @@ func TestCreateAndDeleteOfAffinityAssistant(t *testing.T) {
 	}
 
 	expectedAffinityAssistantName := getAffinityAssistantName(workspaceName, testPipelineRun.Name)
-	_, err = c.KubeClientSet.AppsV1().StatefulSets(testPipelineRun.Namespace).Get(expectedAffinityAssistantName, metav1.GetOptions{})
+	_, err = c.KubeClientSet.AppsV1().StatefulSets(testPipelineRun.Namespace).Get(context.TODO(), expectedAffinityAssistantName, metav1.GetOptions{})
 	if err != nil {
 		t.Errorf("unexpected error when retrieving StatefulSet: %v", err)
 	}
@@ -72,7 +72,7 @@ func TestCreateAndDeleteOfAffinityAssistant(t *testing.T) {
 		t.Errorf("unexpected error from cleanupAffinityAssistants: %v", err)
 	}
 
-	_, err = c.KubeClientSet.AppsV1().StatefulSets(testPipelineRun.Namespace).Get(expectedAffinityAssistantName, metav1.GetOptions{})
+	_, err = c.KubeClientSet.AppsV1().StatefulSets(testPipelineRun.Namespace).Get(context.TODO(), expectedAffinityAssistantName, metav1.GetOptions{})
 	if !apierrors.IsNotFound(err) {
 		t.Errorf("expected a NotFound response, got: %v", err)
 	}

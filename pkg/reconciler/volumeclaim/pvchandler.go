@@ -17,6 +17,7 @@ limitations under the License.
 package volumeclaim
 
 import (
+	"context"
 	"crypto/sha256"
 	"fmt"
 
@@ -55,10 +56,10 @@ func NewPVCHandler(clientset clientset.Interface, logger *zap.SugaredLogger) Pvc
 func (c *defaultPVCHandler) CreatePersistentVolumeClaimsForWorkspaces(wb []v1beta1.WorkspaceBinding, ownerReference metav1.OwnerReference, namespace string) error {
 	var errs []error
 	for _, claim := range getPersistentVolumeClaims(wb, ownerReference, namespace) {
-		_, err := c.clientset.CoreV1().PersistentVolumeClaims(claim.Namespace).Get(claim.Name, metav1.GetOptions{})
+		_, err := c.clientset.CoreV1().PersistentVolumeClaims(claim.Namespace).Get(context.TODO(), claim.Name, metav1.GetOptions{})
 		switch {
 		case apierrors.IsNotFound(err):
-			_, err := c.clientset.CoreV1().PersistentVolumeClaims(claim.Namespace).Create(claim)
+			_, err := c.clientset.CoreV1().PersistentVolumeClaims(claim.Namespace).Create(context.TODO(), claim, metav1.CreateOptions{})
 			if err != nil {
 				errs = append(errs, fmt.Errorf("failed to create PVC %s: %s", claim.Name, err))
 			}

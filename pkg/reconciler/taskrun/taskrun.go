@@ -120,7 +120,7 @@ func (c *Reconciler) ReconcileKind(ctx context.Context, tr *v1beta1.TaskRun) pkg
 			return merr.ErrorOrNil()
 		}
 		c.timeoutHandler.Release(tr.GetNamespacedName())
-		pod, err := c.KubeClientSet.CoreV1().Pods(tr.Namespace).Get(tr.Status.PodName, metav1.GetOptions{})
+		pod, err := c.KubeClientSet.CoreV1().Pods(tr.Namespace).Get(context.TODO(), tr.Status.PodName, metav1.GetOptions{})
 		if err == nil {
 			err = podconvert.StopSidecars(c.Images.NopImage, c.KubeClientSet, *pod)
 			if err == nil {
@@ -338,7 +338,7 @@ func (c *Reconciler) reconcile(ctx context.Context, tr *v1beta1.TaskRun,
 	var err error
 
 	if tr.Status.PodName != "" {
-		pod, err = c.KubeClientSet.CoreV1().Pods(tr.Namespace).Get(tr.Status.PodName, metav1.GetOptions{})
+		pod, err = c.KubeClientSet.CoreV1().Pods(tr.Namespace).Get(context.TODO(), tr.Status.PodName, metav1.GetOptions{})
 		if k8serrors.IsNotFound(err) {
 			// Keep going, this will result in the Pod being created below.
 		} else if err != nil {
@@ -349,7 +349,7 @@ func (c *Reconciler) reconcile(ctx context.Context, tr *v1beta1.TaskRun,
 			return err
 		}
 	} else {
-		pos, err := c.KubeClientSet.CoreV1().Pods(tr.Namespace).List(metav1.ListOptions{
+		pos, err := c.KubeClientSet.CoreV1().Pods(tr.Namespace).List(context.TODO(), metav1.ListOptions{
 			LabelSelector: getLabelSelector(tr),
 		})
 		if err != nil {
@@ -519,7 +519,7 @@ func (c *Reconciler) failTaskRun(ctx context.Context, tr *v1beta1.TaskRun, reaso
 	// tr.Status.PodName will be empty if the pod was never successfully created. This condition
 	// can be reached, for example, by the pod never being schedulable due to limits imposed by
 	// a namespace's ResourceQuota.
-	err := c.KubeClientSet.CoreV1().Pods(tr.Namespace).Delete(tr.Status.PodName, &metav1.DeleteOptions{})
+	err := c.KubeClientSet.CoreV1().Pods(tr.Namespace).Delete(context.TODO(), tr.Status.PodName, metav1.DeleteOptions{})
 	if err != nil && !k8serrors.IsNotFound(err) {
 		logger.Infof("Failed to terminate pod: %v", err)
 		return err
@@ -631,7 +631,7 @@ func (c *Reconciler) createPod(ctx context.Context, tr *v1beta1.TaskRun, rtr *re
 		return nil, fmt.Errorf("translating TaskSpec to Pod: %w", err)
 	}
 
-	return c.KubeClientSet.CoreV1().Pods(tr.Namespace).Create(pod)
+	return c.KubeClientSet.CoreV1().Pods(tr.Namespace).Create(context.TODO(), pod, metav1.CreateOptions{})
 
 }
 

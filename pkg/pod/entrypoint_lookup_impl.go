@@ -17,6 +17,7 @@ limitations under the License.
 package pod
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/google/go-containerregistry/pkg/authn"
@@ -59,7 +60,7 @@ func (e *entrypointCache) Get(ref name.Reference, namespace, serviceAccountName 
 	// If the image wasn't specified by digest, or if the entrypoint
 	// wasn't found, we have to consult the remote registry, using
 	// imagePullSecrets.
-	kc, err := k8schain.New(e.kubeclient, k8schain.Options{
+	kc, err := k8schain.New(context.TODO(), e.kubeclient, k8schain.Options{
 		Namespace:          namespace,
 		ServiceAccountName: serviceAccountName,
 	})

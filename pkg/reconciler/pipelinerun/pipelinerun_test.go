@@ -1992,7 +1992,7 @@ func makeExpectedTr(condName, ccName string, labels, annotations map[string]stri
 
 func ensurePVCCreated(t *testing.T, clients test.Clients, name, namespace string) {
 	t.Helper()
-	_, err := clients.Kube.CoreV1().PersistentVolumeClaims(namespace).Get(name, metav1.GetOptions{})
+	_, err := clients.Kube.CoreV1().PersistentVolumeClaims(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		t.Errorf("Expected PVC %s to be created for VolumeResource but did not exist", name)
 	}

@@ -17,6 +17,7 @@ limitations under the License.
 package test
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"strings"
@@ -37,7 +38,7 @@ func CollectPodLogs(c *clients, podName, namespace string, logf logging.FormatLo
 }
 
 func getContainersLogsFromPod(c kubernetes.Interface, pod, namespace string) (string, error) {
-	p, err := c.CoreV1().Pods(namespace).Get(pod, metav1.GetOptions{})
+	p, err := c.CoreV1().Pods(namespace).Get(context.TODO(), pod, metav1.GetOptions{})
 	if err != nil {
 		return "", err
 	}
@@ -57,7 +58,7 @@ func getContainersLogsFromPod(c kubernetes.Interface, pod, namespace string) (st
 func getContainerLogsFromPod(c kubernetes.Interface, pod, container, namespace string) (string, error) {
 	sb := strings.Builder{}
 	req := c.CoreV1().Pods(namespace).GetLogs(pod, &corev1.PodLogOptions{Follow: true, Container: container})
-	rc, err := req.Stream()
+	rc, err := req.Stream(context.TODO())
 	if err != nil {
 		return "", err
 	}

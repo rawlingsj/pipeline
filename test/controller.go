@@ -19,6 +19,7 @@ package test
 import (
 	"context"
 	"fmt"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sync/atomic"
 	"testing"
 
@@ -229,27 +230,27 @@ func SeedTestData(t *testing.T, ctx context.Context, d Data) (Clients, Informers
 	c.Kube.PrependReactor("*", "pods", AddToInformer(t, i.Pod.Informer().GetIndexer()))
 	for _, p := range d.Pods {
 		p := p.DeepCopy() // Avoid assumptions that the informer's copy is modified.
-		if _, err := c.Kube.CoreV1().Pods(p.Namespace).Create(p); err != nil {
+		if _, err := c.Kube.CoreV1().Pods(p.Namespace).Create(context.TODO(), p, metav1.CreateOptions{}); err != nil {
 			t.Fatal(err)
 		}
 	}
 	for _, n := range d.Namespaces {
 		n := n.DeepCopy() // Avoid assumptions that the informer's copy is modified.
-		if _, err := c.Kube.CoreV1().Namespaces().Create(n); err != nil {
+		if _, err := c.Kube.CoreV1().Namespaces().Create(context.TODO(), n, metav1.CreateOptions{}); err != nil {
 			t.Fatal(err)
 		}
 	}
 	c.Kube.PrependReactor("*", "configmaps", AddToInformer(t, i.ConfigMap.Informer().GetIndexer()))
 	for _, cm := range d.ConfigMaps {
 		cm := cm.DeepCopy() // Avoid assumptions that the informer's copy is modified.
-		if _, err := c.Kube.CoreV1().ConfigMaps(cm.Namespace).Create(cm); err != nil {
+		if _, err := c.Kube.CoreV1().ConfigMaps(cm.Namespace).Create(context.TODO(), cm, metav1.CreateOptions{}); err != nil {
 			t.Fatal(err)
 		}
 	}
 	c.Kube.PrependReactor("*", "serviceaccounts", AddToInformer(t, i.ServiceAccount.Informer().GetIndexer()))
 	for _, sa := range d.ServiceAccounts {
 		sa := sa.DeepCopy() // Avoid assumptions that the informer's copy is modified.
-		if _, err := c.Kube.CoreV1().ServiceAccounts(sa.Namespace).Create(sa); err != nil {
+		if _, err := c.Kube.CoreV1().ServiceAccounts(sa.Namespace).Create(context.TODO(), sa, metav1.CreateOptions{}); err != nil {
 			t.Fatal(err)
 		}
 	}

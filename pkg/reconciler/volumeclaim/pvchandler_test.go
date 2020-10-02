@@ -17,6 +17,7 @@ limitations under the License.
 package volumeclaim
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -78,7 +79,7 @@ func TestCreatePersistentVolumeClaimsForWorkspaces(t *testing.T) {
 	}
 
 	expectedPVCName := claimName1 + "-ad02547921"
-	pvc, err := fakekubeclient.CoreV1().PersistentVolumeClaims(namespace).Get(expectedPVCName, metav1.GetOptions{})
+	pvc, err := fakekubeclient.CoreV1().PersistentVolumeClaims(namespace).Get(context.TODO(), expectedPVCName, metav1.GetOptions{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -140,7 +141,7 @@ func TestCreatePersistentVolumeClaimsForWorkspacesWithoutMetadata(t *testing.T) 
 	}
 
 	expectedPVCName := fmt.Sprintf("%s-%s", "pvc", "3fc56c2bb2")
-	pvc, err := fakekubeclient.CoreV1().PersistentVolumeClaims(namespace).Get(expectedPVCName, metav1.GetOptions{})
+	pvc, err := fakekubeclient.CoreV1().PersistentVolumeClaims(namespace).Get(context.TODO(), expectedPVCName, metav1.GetOptions{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

@@ -19,6 +19,7 @@ limitations under the License.
 package v1beta1
 
 import (
+	"context"
 	"time"
 
 	v1beta1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
@@ -70,7 +71,7 @@ func (c *pipelines) Get(name string, options v1.GetOptions) (result *v1beta1.Pip
 		Resource("pipelines").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -87,7 +88,7 @@ func (c *pipelines) List(opts v1.ListOptions) (result *v1beta1.PipelineList, err
 		Resource("pipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -104,7 +105,7 @@ func (c *pipelines) Watch(opts v1.ListOptions) (watch.Interface, error) {
 		Resource("pipelines").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
-		Watch()
+		Watch(context.TODO())
 }
 
 // Create takes the representation of a pipeline and creates it.  Returns the server's representation of the pipeline, and an error, if there is any.
@@ -114,7 +115,7 @@ func (c *pipelines) Create(pipeline *v1beta1.Pipeline) (result *v1beta1.Pipeline
 		Namespace(c.ns).
 		Resource("pipelines").
 		Body(pipeline).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -127,7 +128,7 @@ func (c *pipelines) Update(pipeline *v1beta1.Pipeline) (result *v1beta1.Pipeline
 		Resource("pipelines").
 		Name(pipeline.Name).
 		Body(pipeline).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }
@@ -139,7 +140,7 @@ func (c *pipelines) Delete(name string, options *v1.DeleteOptions) error {
 		Resource("pipelines").
 		Name(name).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -155,7 +156,7 @@ func (c *pipelines) DeleteCollection(options *v1.DeleteOptions, listOptions v1.L
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
 		Body(options).
-		Do().
+		Do(context.TODO()).
 		Error()
 }
 
@@ -168,7 +169,7 @@ func (c *pipelines) Patch(name string, pt types.PatchType, data []byte, subresou
 		SubResource(subresources...).
 		Name(name).
 		Body(data).
-		Do().
+		Do(context.TODO()).
 		Into(result)
 	return
 }

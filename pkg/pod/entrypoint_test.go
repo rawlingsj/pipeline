@@ -17,6 +17,7 @@ limitations under the License.
 package pod
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -301,7 +302,7 @@ func TestUpdateReady(t *testing.T) {
 				t.Errorf("UpdateReady: %v", err)
 			}
 
-			got, err := kubeclient.CoreV1().Pods(c.pod.Namespace).Get(c.pod.Name, metav1.GetOptions{})
+			got, err := kubeclient.CoreV1().Pods(c.pod.Namespace).Get(context.TODO(), c.pod.Name, metav1.GetOptions{})
 			if err != nil {
 				t.Errorf("Getting pod %q after update: %v", c.pod.Name, err)
 			} else if d := cmp.Diff(c.wantAnnotations, got.Annotations); d != "" {
@@ -416,7 +417,7 @@ func TestStopSidecars(t *testing.T) {
 				t.Errorf("error stopping sidecar: %v", err)
 			}
 
-			got, err := kubeclient.CoreV1().Pods(c.pod.Namespace).Get(c.pod.Name, metav1.GetOptions{})
+			got, err := kubeclient.CoreV1().Pods(c.pod.Namespace).Get(context.TODO(), c.pod.Name, metav1.GetOptions{})
 			if err != nil {
 				t.Errorf("Getting pod %q after update: %v", c.pod.Name, err)
 			} else if d := cmp.Diff(c.wantContainers, got.Spec.Containers); d != "" {
